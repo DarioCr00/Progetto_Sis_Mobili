@@ -3,7 +3,6 @@ package it.unibo.demo.nearpharm
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -40,8 +39,6 @@ class PermissionLocationActivity : AppCompatActivity() {
         when {
             ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED -> {
                 Toast.makeText(applicationContext, "$name permission already granted", Toast.LENGTH_SHORT ).show()
-
-                startMapActivity()
             }
             shouldShowRequestPermissionRationale(permission) -> showDialog(permission, name, requestCode)
 

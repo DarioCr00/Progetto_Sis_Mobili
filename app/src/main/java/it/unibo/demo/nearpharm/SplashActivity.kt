@@ -1,6 +1,7 @@
 package it.unibo.demo.nearpharm
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +9,9 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import android.Manifest
+
 
 class SplashActivity : AppCompatActivity() {
 
@@ -28,9 +32,20 @@ class SplashActivity : AppCompatActivity() {
         textView.text = "NEARPHARM"
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, PermissionLocationActivity::class.java)
-            startActivity(intent)
-            finish()
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+                // I permessi di ACCESS_FINE_LOCATION sono già concessi, puoi accedere alla MapsActivity
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
+                finish() // Opzionale: chiudi l'Activity corrente
+            } else {
+                // I permessi di ACCESS_FINE_LOCATION non sono ancora concessi, devi richiedere i permessi nella PermissionLocationActivity
+                val intent = Intent(this, PermissionLocationActivity::class.java)
+                startActivity(intent)
+                finish() // Opzionale: chiudi l'Activity corrente
+            }
+
         }, SPLASH_DELAY)
     }
 
