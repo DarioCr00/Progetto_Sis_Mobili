@@ -38,12 +38,12 @@ class SplashActivity : AppCompatActivity() {
                 // I permessi di ACCESS_FINE_LOCATION sono già concessi, puoi accedere alla MapsActivity
                 val intent = Intent(this, MapsActivity::class.java)
                 startActivity(intent)
-                finish() // Opzionale: chiudi l'Activity corrente
+                finish()
             } else {
                 // I permessi di ACCESS_FINE_LOCATION non sono ancora concessi, devi richiedere i permessi nella PermissionLocationActivity
                 val intent = Intent(this, PermissionLocationActivity::class.java)
                 startActivity(intent)
-                finish() // Opzionale: chiudi l'Activity corrente
+                finish()
             }
 
         }, SPLASH_DELAY)
