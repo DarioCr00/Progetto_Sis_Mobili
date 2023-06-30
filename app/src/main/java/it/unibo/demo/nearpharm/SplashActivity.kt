@@ -29,7 +29,8 @@ class SplashActivity : AppCompatActivity() {
         )
 
         val textView = findViewById<TextView>(R.id.textView)
-        textView.text = "NEARPHARM"
+        textView.text = "NearPharm"
+        textView.setTextColor(getResources().getColor(com.google.android.libraries.places.R.color.quantum_googblueA700));
 
         Handler(Looper.getMainLooper()).postDelayed({
 
