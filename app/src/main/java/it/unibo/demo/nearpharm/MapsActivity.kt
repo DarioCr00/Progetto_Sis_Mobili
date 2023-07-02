@@ -15,12 +15,20 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.DirectionsApi
+import com.google.maps.GeoApiContext
+import com.google.maps.PendingResult
+import com.google.maps.model.DirectionsResult
+import com.google.maps.model.TravelMode
+import it.unibo.demo.nearpharm.BuildConfig.MAPS_API_KEY
+
 
 class MapsActivity: AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var geoApiContext: GeoApiContext
 
     companion object{
         private const val LOCATION_REQUEST_CODE = 101
@@ -36,6 +44,10 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        geoApiContext = GeoApiContext.Builder()
+            .apiKey("${MAPS_API_KEY}")
+            .build()
     }
 
 
@@ -64,7 +76,7 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             if(location !=null){
                 lastLocation = location
                 val currentLatLong = LatLng(location.latitude, location.longitude)
-                placeMarkerOnMap(currentLatLong)
+                placeMarkerOnMap(currentLatLong) //da modificare con il pallino
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 20f))
             }
         }
@@ -77,7 +89,40 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mMap.addMarker((markerOptions))
     }
 
-    override fun onMarkerClick(p0: Marker?) = false
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        val destination = marker?.position
+        if (destination != null) {
+            calculateDirections(destination)
+        }
+        return false
+    }
+
+    private fun calculateDirections(destination: LatLng) {
+        val origin = "${lastLocation.latitude},${lastLocation.longitude}"
+        val destinationStr = "${destination.latitude},${destination.longitude}"
+
+        DirectionsApi.newRequest(geoApiContext)
+            .mode(TravelMode.DRIVING) // Puoi cambiare il modo di viaggio (DRIVING, WALKING, TRANSIT, ecc.)
+            .origin(origin)
+            .destination(destinationStr)
+            .setCallback(object : PendingResult.Callback<DirectionsResult> {
+                override fun onResult(result: DirectionsResult?) {
+                    // Processa il risultato delle indicazioni del percorso
+                    if (result != null && result.routes.isNotEmpty()) {
+                        val route = result.routes[0]
+                        val distance = route.legs[0].distance
+                        val duration = route.legs[0].duration
+
+                        // Aggiungi qui la logica per visualizzare la distanza e la durata del percorso all'utente
+                    }
+                }
+
+                override fun onFailure(e: Throwable?) {
+                    // Gestisci l'errore di richiesta delle indicazioni del percorso
+                }
+            })
+    }
+
 }
 
 
